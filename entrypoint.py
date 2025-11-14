@@ -2,10 +2,10 @@ from subprocess import call
 from sys import argv
 from os import getenv, getuid
 
-(_, generator, docker_repository, docker_image, generator_tag, commit_sha, openapi_file, openapi_url, config_file, template_dir, *args) = argv
+(_, generator, docker_repository, docker_image, generator_tag, sha, openapi_file, openapi_url, config_file, template_dir, *args) = argv
 
-# Always use commit SHA for pinned image
-docker_image_ref = f"{docker_repository}/{docker_image}@sha256:{commit_sha}"
+# Always use SHA for pinned image
+docker_image_ref = f"{docker_repository}/{docker_image}@sha256:{sha}"
 
 cmd = [
     "docker", "run",
