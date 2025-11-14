@@ -20,6 +20,10 @@ inputs:
     description: The Docker tag of the openapitools/openapi-generator-cli image to use.
     required: false
     default: latest
+  commit-sha:
+    description: The commit SHA to use for pinning the docker image (takes precedence over generator-tag if provided).
+    required: false
+    default: c5e90f1b06404c1fa69387beae93c14c40fd4efc72b72dfe0e3fc098504f6e45
   openapi-file:
     description: The path to the OpenAPI document to generate a client library for
     required: false
@@ -66,4 +70,4 @@ runs:
       shell: bash
       
     - shell: bash
-      run: python ${{ github.action_path }}/entrypoint.py ${{ inputs.generator }} ${{ inputs.docker-repository }} ${{ inputs.docker-image }} ${{ inputs.generator-tag }} ${{ inputs.openapi-file }} ${{ inputs.openapi-url }} ${{ inputs.config-file }} ${{ inputs.template-dir }} ${{ inputs.command-args}}
+      run: python ${{ github.action_path }}/entrypoint.py ${{ inputs.generator }} ${{ inputs.docker-repository }} ${{ inputs.docker-image }} ${{ inputs.generator-tag }} ${{ inputs.commit-sha }} ${{ inputs.openapi-file }} ${{ inputs.openapi-url }} ${{ inputs.config-file }} ${{ inputs.template-dir }} ${{ inputs.command-args}}

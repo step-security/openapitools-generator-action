@@ -2,7 +2,10 @@ from subprocess import call
 from sys import argv
 from os import getenv, getuid
 
-(_, generator, docker_repository, docker_image, generator_tag, openapi_file, openapi_url, config_file, template_dir, *args) = argv
+(_, generator, docker_repository, docker_image, generator_tag, commit_sha, openapi_file, openapi_url, config_file, template_dir, *args) = argv
+
+# Always use commit SHA for pinned image
+docker_image_ref = f"{docker_repository}/{docker_image}@sha256:{commit_sha}"
 
 cmd = [
     "docker", "run",
@@ -10,7 +13,7 @@ cmd = [
     "--rm",
     "--workdir", "/github/workspace",
     "-v", f"{getenv('GITHUB_WORKSPACE')}:/github/workspace",
-    f"{docker_repository}/{docker_image}:{generator_tag}",
+    docker_image_ref,
     "generate",
     "-g", generator,
     "-o", f"/github/workspace/{generator}-client"
