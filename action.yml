@@ -1,0 +1,69 @@
+name: "Generate Client Library w/ the OpenAPITools Generator"
+description: "Generates a client library from an openapifile using OpenAPITools' generator"
+branding:
+  icon: target
+  color: green
+
+inputs: 
+  generator:
+    description: The name of the generator (i.e. the language to generate the client library in) to use e.g. "typescript-angular"
+    required: true
+  docker-repository:
+    description: The Docker repository uses as source for openapitools/openapi-generator-cli image.
+    required: false
+    default: "docker.io"
+  docker-image:
+    description: The Docker image used by the generator.
+    required: false
+    default: "openapitools/openapi-generator-cli"
+  generator-tag:
+    description: The Docker tag of the openapitools/openapi-generator-cli image to use.
+    required: false
+    default: latest
+  openapi-file:
+    description: The path to the OpenAPI document to generate a client library for
+    required: false
+    default: openapi.json
+  openapi-url:
+    description: If set, the OpenAPI document will be loaded from this URL instead of openapi-file.
+    required: false
+    default: UNSET
+  config-file:
+    description: The path to the config file to be passed along to the OpenAPITools generator
+    required: false
+    default: UNSET
+  template-dir:
+    description: The path to the folder containing the template files
+    required: false
+    default: UNSET
+  command-args:
+    description: Optional, additional arguments to pass through to the generator.
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Subscription check
+      run : |
+        # validate subscription status
+        API_URL="https://agent.api.stepsecurity.io/v1/github/$GITHUB_REPOSITORY/actions/subscription"
+
+        # Set a timeout for the curl command (3 seconds)
+        RESPONSE=$(curl --max-time 3 -s -w "%{http_code}" "$API_URL" -o /dev/null) || true
+        CURL_EXIT_CODE=$?
+
+        # Decide based on curl exit code and HTTP status
+        if [ $CURL_EXIT_CODE -ne 0 ]; then
+          echo "Timeout or API not reachable. Continuing to next step."
+        elif [ "$RESPONSE" = "200" ]; then
+          :
+        elif [ "$RESPONSE" = "403" ]; then
+          echo "Subscription is not valid. Reach out to support@stepsecurity.io"
+          exit 1
+        else
+          echo "Timeout or API not reachable. Continuing to next step."
+        fi
+      shell: bash
+      
+    - shell: bash
+      run: python ${{ github.action_path }}/entrypoint.py ${{ inputs.generator }} ${{ inputs.docker-repository }} ${{ inputs.docker-image }} ${{ inputs.generator-tag }} ${{ inputs.openapi-file }} ${{ inputs.openapi-url }} ${{ inputs.config-file }} ${{ inputs.template-dir }} ${{ inputs.command-args}}
