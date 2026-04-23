@@ -1,3 +1,5 @@
+[![StepSecurity Maintained Action](https://raw.githubusercontent.com/step-security/maintained-actions-assets/main/assets/maintained-action-banner.png)](https://docs.stepsecurity.io/actions/stepsecurity-maintained-actions)
+
 # openapitools-generator-action
 Generate a client library from an OpenAPI document using the [OpenAPITools Generator](https://github.com/OpenAPITools/openapi-generator)
 
